@@ -11,4 +11,4 @@ ACCESS_PASSWORD = "1234"
 
 [vars]
 # Environment variables can be set here or in Cloudflare Dashboard
-NEXT_PUBLIC_SUBSCRIPTION_SOURCES = '[{"name":"DY","url":"raw.githubusercontent.com/rapier15sapper/ew/refs/heads/main/test.json"}]'
+NEXT_PUBLIC_SUBSCRIPTION_SOURCES = '[{"name":"DY","url":"https://raw.githubusercontent.com/rapier15sapper/ew/refs/heads/main/test.json"}]'
