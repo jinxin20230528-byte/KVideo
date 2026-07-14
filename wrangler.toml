@@ -6,8 +6,8 @@ name = "kvideo"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".vercel/output/static"
-ACCESS_PASSWORD = "1234"
 
 [vars]
 # Environment variables can be set here or in Cloudflare Dashboard
+ACCESS_PASSWORD = "1234"
 NEXT_PUBLIC_SUBSCRIPTION_SOURCES = '[{"name":"常用视频源","url":"https://raw.githubusercontent.com/rapier15sapper/ew/refs/heads/main/test.json"}]'
