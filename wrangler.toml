@@ -6,6 +6,8 @@ name = "kvideo"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".vercel/output/static"
+ACCESS_PASSWORD = "1234"
+NEXT_PUBLIC_SUBSCRIPTION_SOURCES = "http://raw.githubusercontent.com/rapier15sapper/ew/ewfs/heads/main/test.json"
 
 [vars]
 # Environment variables can be set here or in Cloudflare Dashboard
