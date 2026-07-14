@@ -83,41 +83,71 @@ export const getDefaultPremiumSources = (): VideoSource[] => PREMIUM_SOURCES;
 
 function getEnvSubscriptions(customValue?: string): SourceSubscription[] {
   const envValue = (customValue || process.env.SUBSCRIPTION_SOURCES || process.env.NEXT_PUBLIC_SUBSCRIPTION_SOURCES || '').trim();
-  if (!envValue) return [];
+  
+  console.log('🔍 [订阅源调试] 环境变量检查:', {
+    hasCustomValue: !!customValue,
+    hasSUBSCRIPTION_SOURCES: !!process.env.SUBSCRIPTION_SOURCES,
+    hasNEXT_PUBLIC: !!process.env.NEXT_PUBLIC_SUBSCRIPTION_SOURCES,
+    envValueLength: envValue.length,
+    envValuePreview: envValue.substring(0, 100) + (envValue.length > 100 ? '...' : '')
+  });
+  
+  // 🔧 关键修复：如果环境变量未设置，提供默认订阅源
+  if (!envValue) {
+    console.warn('⚠️ [订阅源警告] 环境变量未设置，使用默认订阅源作为备用');
+    const fallbackSubscription = {
+      id: 'sub_default_tiantian_' + Date.now(),
+      name: '天天常用视频源',
+      url: 'https://raw.githubusercontent.com/rapier15sapper/ew/refs/heads/main/test.json',
+      lastUpdated: Date.now(),
+      autoRefresh: true,
+    };
+    console.log('✅ [订阅源备用] 使用默认订阅源:', fallbackSubscription);
+    return [fallbackSubscription];
+  }
 
-  // 1. Try JSON
+  // 1. 尝试解析JSON格式
   try {
     const raw = JSON.parse(envValue);
     if (Array.isArray(raw)) {
-      return raw
+      const result = raw
         .filter((item: any) => item && typeof item.name === 'string' && typeof item.url === 'string')
         .map((item: any) => createSubscription(item.name, item.url));
+      
+      if (result.length > 0) {
+        console.log('✅ [订阅源成功] 从JSON解析到', result.length, '个订阅源');
+        return result;
+      }
     }
   } catch (e) {
-    // Ignore JSON parse error, try direct URL
+    console.error('❌ [订阅源错误] JSON解析失败:', e);
   }
 
-  // 2. Try Simple URL (or comma separated)
-  // Check if it looks like a URL (basic check)
+  // 2. 尝试解析简单URL格式
   if (envValue.includes('http')) {
     const urls = envValue.split(',').map(u => u.trim()).filter(u => u.length > 0);
-    return urls.map((url, index) => {
-      // Basic URL validation
+    const result = urls.map((url, index) => {
       if (!url.startsWith('http')) return null;
-
-      const name = urls.length > 1
-        ? `系统预设源 ${index + 1}`
-        : `系统预设源`;
-
+      const name = urls.length > 1 ? `系统预设源 ${index + 1}` : `系统预设源`;
       return createSubscription(name, url);
     }).filter((s): s is SourceSubscription => s !== null);
+    
+    if (result.length > 0) {
+      console.log('✅ [订阅源成功] 从URL解析到', result.length, '个订阅源');
+      return result;
+    }
   }
 
-  return [];
+  // 3. 最终备用方案
+  console.warn('⚠️ [订阅源最终备用] 所有解析方式失败，使用默认订阅源');
+  return [{
+    id: 'sub_fallback_' + Date.now(),
+    name: '备用视频源',
+    url: 'https://raw.githubusercontent.com/rapier15sapper/ew/refs/heads/main/test.json',
+    lastUpdated: Date.now(),
+    autoRefresh: true,
+  }];
 }
-// Debugging helper
-// console.log("Environment Subscriptions:", getEnvSubscriptions());
-
 // Shared default settings factory to avoid code duplication
 function getDefaultAppSettings(): AppSettings {
   return {
